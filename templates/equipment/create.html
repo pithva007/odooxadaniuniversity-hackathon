@@ -1,0 +1,72 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            
+            <div class="card-header bg-primary text-white">
+                <h4>➕ Register New Asset</h4>
+            </div>
+
+            <div class="card-body">
+                
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div class="alert alert-danger">{{ messages[0] }}</div>
+                    {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="/equipment/create">
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Equipment Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. HP Laserjet Pro" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Serial Number</label>
+                        <input type="text" name="serial" class="form-control" placeholder="e.g. SN-998877" required>
+                    </div>
+                    <div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label fw-bold">Serial Number</label>
+            <input type="text" name="serial" class="form-control" placeholder="e.g. SN-998877" required>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label fw-bold text-success">
+                <i class="bi bi-shield-check"></i> Warranty Expiration
+            </label>
+            <input type="date" name="warranty_date" class="form-control">
+            <small class="text-muted">Leave empty if unknown</small>
+        </div>
+    </div>
+</div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Default Location</label>
+                        <input type="text" name="location" class="form-control" placeholder="e.g. 2nd Floor, Room 101" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Assigned Team</label>
+                        <select name="team_id" class="form-select">
+                            {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Who is responsible for fixing this?</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Save Asset</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

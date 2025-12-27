@@ -1,0 +1,31 @@
+{% extends "layouts/base.html" %}
+{% block content %}
+<div class="card shadow p-4 mx-auto" style="max-width: 600px;">
+    <h3>Update Request: {{ req.title }}</h3>
+    <p>Reported by User (ID: {{ req.created_by_id }}) for {{ req.equipment.name }}</p>
+    
+    <form method="POST">
+        <div class="mb-3">
+            <label>Change Status</label>
+            <select name="status" class="form-select">
+                <option value="New" {% if req.status=='New'%}selected{%endif%}>New</option>
+                <option value="In Progress" {% if req.status=='In Progress'%}selected{%endif%}>In Progress</option>
+                <option value="Repaired" {% if req.status=='Repaired'%}selected{%endif%}>Repaired</option>
+                <option value="Scrap" {% if req.status=='Scrap'%}selected{%endif%}>Scrap</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Estimated Completion Date</label>
+            <input type="date" name="est_date" class="form-control" value="{{ req.estimated_completion }}">
+        </div>
+
+        <div class="mb-3">
+            <label>Response / Notes (User will see this)</label>
+            <textarea name="response" class="form-control" rows="3">{{ req.admin_response }}</textarea>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Update Ticket</button>
+    </form>
+</div>
+{% endblock %}

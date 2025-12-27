@@ -1,0 +1,244 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="page-wrapper py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-9 col-lg-10">
+                
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="card main-card border-0 shadow-xl overflow-hidden animate__animated animate__fadeInUp">
+                        
+                        <div class="card-header bg-white border-0 pt-5 pb-4 px-5 text-center position-relative">
+                            <div class="header-icon mx-auto mb-3 shadow-sm text-primary bg-primary bg-opacity-10">
+                                <i class="bi bi-tools"></i>
+                            </div>
+                            <h2 class="fw-bold text-dark mb-1">Submit Service Request</h2>
+                            <p class="text-muted mb-0">We'll get your equipment back on track.</p>
+                            
+                            <div class="progress-line mt-4 mx-auto"></div>
+                        </div>
+
+                        <div class="card-body px-5 pb-5">
+                            
+                            <h6 class="text-uppercase text-muted fw-bold small ls-1 mb-3 mt-2">1. Priority & Type</h6>
+                            
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="type" id="type1" value="Corrective" checked onclick="toggleDate(false)">
+                                    <label class="option-card p-4 w-100 rounded-4 d-flex align-items-center cursor-pointer border" for="type1">
+                                        <div class="icon-wrap bg-danger text-white shadow-sm">
+                                            <i class="bi bi-lightning-fill"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="fw-bold text-dark mb-0">Urgent Repair</h6>
+                                            <small class="text-muted">It's broken or stopped.</small>
+                                        </div>
+                                        <div class="check-circle ms-auto border rounded-circle"></div>
+                                    </label>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <input type="radio" class="btn-check" name="type" id="type2" value="Preventive" onclick="toggleDate(true)">
+                                    <label class="option-card p-4 w-100 rounded-4 d-flex align-items-center cursor-pointer border" for="type2">
+                                        <div class="icon-wrap bg-primary text-white shadow-sm">
+                                            <i class="bi bi-calendar-event"></i>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h6 class="fw-bold text-dark mb-0">Maintenance</h6>
+                                            <small class="text-muted">Schedule a checkup.</small>
+                                        </div>
+                                        <div class="check-circle ms-auto border rounded-circle"></div>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="dateBox" class="mb-5 animate__animated animate__fadeIn" style="display: none;">
+                                <div class="p-3 bg-primary bg-opacity-10 rounded-3 border border-primary border-opacity-25 d-flex align-items-center">
+                                    <i class="bi bi-calendar-check fs-4 text-primary me-3"></i>
+                                    <div class="flex-grow-1">
+                                        <label class="fw-bold text-dark small text-uppercase">Preferred Date</label>
+                                        <input type="date" name="scheduled_date" class="form-control bg-white border-0 shadow-sm mt-1">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-5 border-light">
+
+                            <div class="row g-4">
+                                
+                                <div class="col-lg-6">
+                                    <h6 class="text-uppercase text-muted fw-bold small ls-1 mb-3">2. Equipment</h6>
+                                    
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold small">Select Asset</label>
+                                        <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                            <span class="input-group-text bg-white border-0 ps-3"><i class="bi bi-box-seam text-secondary"></i></span>
+                                            <select name="equipment_id" id="eqSelect" class="form-select border-0 py-3" onchange="autoFillLocation()" required>
+                                                <option value="">-- Choose Machine --</option>
+                                                {% for eq in equipment_list %}
+                                                    {% if eq.id in broken_ids %}
+                                                        <option disabled>🔴 {{ eq.name }} (Active Ticket)</option>
+                                                    {% else %}
+                                                        <option value="{{ eq.id }}" data-loc="{{ eq.location }}" data-team="{{ eq.assigned_team.name }}">
+                                                            🟢 {{ eq.name }} (SN: {{ eq.serial_number }})
+                                                        </option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div id="teamFeedback" class="mt-2 text-primary small fw-bold d-none animate__animated animate__fadeIn">
+                                            <i class="bi bi-arrow-return-right"></i> Routed to <span id="teamBadge">IT</span> Team
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small">Current Location</label>
+                                        <div class="input-group shadow-sm rounded-3 overflow-hidden">
+                                            <span class="input-group-text bg-white border-0 ps-3"><i class="bi bi-geo-alt text-danger"></i></span>
+                                            <input type="text" name="location" id="locationInput" class="form-control border-0 py-3" placeholder="e.g. Room 101" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6">
+                                    <h6 class="text-uppercase text-muted fw-bold small ls-1 mb-3">3. The Issue</h6>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small">Subject</label>
+                                        <input type="text" name="title" class="form-control shadow-sm border-0 py-3 rounded-3" placeholder="Brief Summary" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold small">Description</label>
+                                        <textarea name="description" class="form-control shadow-sm border-0 rounded-3 p-3" rows="4" placeholder="What happened? Any error codes?"></textarea>
+                                    </div>
+                                    
+                                    <div class="p-2 bg-light rounded-3 d-flex justify-content-between align-items-center">
+                                        <span class="small fw-bold text-muted ps-2">Priority:</span>
+                                        <div class="btn-group" role="group">
+                                            <input type="radio" class="btn-check" name="priority" id="low" value="Low">
+                                            <label class="btn btn-sm btn-outline-secondary rounded-start-pill px-3" for="low">Low</label>
+
+                                            <input type="radio" class="btn-check" name="priority" id="med" value="Medium" checked>
+                                            <label class="btn btn-sm btn-outline-secondary px-3" for="med">Med</label>
+
+                                            <input type="radio" class="btn-check" name="priority" id="high" value="High">
+                                            <label class="btn btn-sm btn-outline-danger rounded-end-pill px-3 fw-bold" for="high">High</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-5 align-items-center">
+                                <div class="col-md-6 mb-3 mb-md-0">
+                                    <label class="btn btn-light w-100 text-start text-muted border border-dashed rounded-3 p-3">
+                                        <i class="bi bi-paperclip me-2"></i> Attach Photo (Optional)
+                                        <input type="file" name="attachment" hidden>
+                                    </label>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-dark w-100 py-3 rounded-3 shadow-lg hover-scale fw-bold">
+                                        Submit Ticket <i class="bi bi-arrow-right ms-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Page Background */
+    .page-wrapper {
+        background: radial-gradient(circle at 10% 20%, rgb(242, 246, 252) 0%, rgb(235, 239, 247) 90%);
+        min-height: 100vh;
+    }
+
+    /* Main Card */
+    .main-card {
+        border-radius: 24px;
+        background: #ffffff;
+    }
+    .shadow-xl { box-shadow: 0 20px 40px rgba(0,0,0,0.08); }
+
+    /* Header Icons */
+    .header-icon {
+        width: 60px; height: 60px;
+        border-radius: 18px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.5rem;
+    }
+    .progress-line { width: 50px; height: 4px; background: #e2e8f0; border-radius: 2px; }
+
+    /* Interactive Option Cards */
+    .option-card {
+        transition: all 0.2s ease;
+        background: #fff;
+        border-color: #f1f5f9 !important;
+    }
+    .option-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+    .icon-wrap {
+        width: 45px; height: 45px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem;
+    }
+    .check-circle { width: 20px; height: 20px; }
+
+    /* Selection Logic */
+    .btn-check:checked + .option-card {
+        background: #f8fafc;
+        border-color: #cbd5e1 !important;
+    }
+    .btn-check:checked + .option-card .check-circle {
+        background: #2563eb;
+        border-color: #2563eb !important;
+        box-shadow: inset 0 0 0 3px #fff;
+    }
+
+    /* Inputs */
+    .form-control, .form-select, .input-group-text {
+        font-size: 0.95rem;
+    }
+    .form-control:focus, .form-select:focus {
+        box-shadow: none;
+        background-color: #f8fafc;
+        border: 1px solid #cbd5e1;
+    }
+    
+    /* Utilities */
+    .ls-1 { letter-spacing: 1px; }
+    .hover-scale:hover { transform: scale(1.02); }
+    .border-dashed { border-style: dashed !important; }
+</style>
+
+<script>
+function toggleDate(show) {
+    const box = document.getElementById("dateBox");
+    box.style.display = show ? "block" : "none";
+}
+
+function autoFillLocation() {
+    var select = document.getElementById("eqSelect");
+    var defaultLoc = select.options[select.selectedIndex].getAttribute("data-loc");
+    var team = select.options[select.selectedIndex].getAttribute("data-team");
+    
+    if (defaultLoc && defaultLoc !== 'None') {
+        document.getElementById("locationInput").value = defaultLoc;
+    }
+    if (team) {
+        document.getElementById("teamFeedback").classList.remove('d-none');
+        document.getElementById("teamBadge").innerText = team;
+    }
+}
+</script>
+{% endblock %}

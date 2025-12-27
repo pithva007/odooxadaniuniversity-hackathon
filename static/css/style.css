@@ -1,0 +1,174 @@
+/* -------------------------------------------------------------------------- */
+/* 1. VARIABLES                                */
+/* -------------------------------------------------------------------------- */
+:root {
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --danger-color: #dc3545;
+    --dark-color: #212529;
+    --bg-body: #f3f5f9;  /* Soft Grey Background */
+    --card-shadow: 0 10px 20px rgba(0,0,0,0.05), 0 6px 6px rgba(0,0,0,0.05);
+    --hover-shadow: 0 15px 30px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.05);
+    --border-radius: 12px;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 2. GLOBAL RESET                             */
+/* -------------------------------------------------------------------------- */
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-body);
+    color: #495057;
+    -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--dark-color);
+    font-weight: 700;
+    letter-spacing: -0.5px; /* Tighter headings look modern */
+}
+
+a {
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 3. MODERN CARDS                             */
+/* -------------------------------------------------------------------------- */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: #ffffff;
+    overflow: hidden; /* Keeps images/headers inside corners */
+}
+
+/* Specific Card Hover Effect (Add class .hover-card to use) */
+.hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--hover-shadow);
+}
+
+.card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+    padding: 1.5rem;
+    font-weight: 600;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 4. BUTTONS & INPUTS                         */
+/* -------------------------------------------------------------------------- */
+.btn {
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+    border: none;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%);
+    border: none;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%);
+    border: none;
+}
+
+.form-control, .form-select {
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem 1rem;
+    background-color: #fcfcfc;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    border-color: #86b7fe;
+    background-color: #fff;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 5. NAVBAR                                   */
+/* -------------------------------------------------------------------------- */
+.navbar {
+    background: #1e293b !important; /* Dark Slate Blue */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.navbar-brand {
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -1px;
+}
+
+.nav-link {
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    border-radius: 6px;
+}
+
+.nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* -------------------------------------------------------------------------- */
+/* 6. KANBAN BOARD                             */
+/* -------------------------------------------------------------------------- */
+/* Custom Scrollbar for horizontal scrolling */
+.overflow-auto::-webkit-scrollbar {
+    height: 10px;
+}
+.overflow-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+.overflow-auto::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 5px;
+}
+.overflow-auto::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* -------------------------------------------------------------------------- */
+/* 7. UTILITIES                                */
+/* -------------------------------------------------------------------------- */
+.badge {
+    padding: 0.5em 0.8em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.shadow-lg {
+    box-shadow: 0 1rem 3rem rgba(0,0,0,0.1) !important;
+}
+
+/* Floating Animation for Graphs or Highlighted items */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+    100% { transform: translateY(0px); }
+}
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+

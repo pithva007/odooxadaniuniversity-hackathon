@@ -1,0 +1,124 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow border-0 rounded-4 overflow-hidden">
+            
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center p-4">
+                <h4 class="mb-0 fw-bold">Ticket #{{ req.id }}</h4>
+                <span class="badge bg-light text-dark fs-6">{{ req.status }}</span>
+            </div>
+
+            <div class="card-body p-4">
+                
+                <div class="alert alert-secondary border-0 shadow-sm mb-4">
+                    <h5 class="fw-bold text-dark">{{ req.title }}</h5>
+                    <p class="mb-2 text-muted">{{ req.description }}</p>
+                    <hr>
+                    <div class="row g-2">
+                        <div class="col-md-6">
+                            <p class="mb-0 small"><i class="bi bi-box-seam me-1"></i> <strong>Asset:</strong> {{ req.equipment.name }}</p>
+                            <p class="mb-0 small"><i class="bi bi-geo-alt me-1"></i> <strong>Current Loc:</strong> {{ req.current_location }}</p>
+                        </div>
+                        <div class="col-md-6">
+                             <p class="mb-0 small"><i class="bi bi-people me-1"></i> <strong>Routed To:</strong> {{ req.team.name }}</p>
+                             <p class="mb-0 small"><i class="bi bi-person me-1"></i> <strong>Reported By:</strong> {{ req.creator.username }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if req.attachment %}
+                    <div class="mt-3">
+                        <a href="{{ url_for('static', filename='uploads/' + req.attachment) }}" target="_blank" class="btn btn-sm btn-outline-dark">
+                            <i class="bi bi-paperclip"></i> View Attachment
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if req.equipment.warranty_expiration %}
+                    
+                    {% set today = now().date() %}
+                    
+                    {% if req.equipment.warranty_expiration >= today %}
+                        <div class="alert alert-warning border-warning border-2 shadow-sm d-flex align-items-center mb-4">
+                            <div class="me-3 bg-warning text-dark rounded-circle p-2 d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                <i class="bi bi-shield-lock-fill fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold mb-1 text-dark">⚠ STOP! Under Warranty</h5>
+                                <p class="mb-0 text-dark small">
+                                    Expires on: <strong>{{ req.equipment.warranty_expiration }}</strong>.<br>
+                                    Do not open hardware. Contact vendor for free repair.
+                                </p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-light border d-flex align-items-center opacity-75 mb-4">
+                            <i class="bi bi-shield-slash-fill fs-4 me-3 text-muted"></i>
+                            <div>
+                                <strong class="text-muted">Warranty Expired</strong><br>
+                                <small>Expired on: {{ req.equipment.warranty_expiration }}. Safe to repair in-house.</small>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                {% else %}
+                    <div class="alert alert-light border text-muted small mb-4">
+                        <i class="bi bi-question-circle me-1"></i> No warranty information available.
+                    </div>
+                {% endif %}
+
+
+                {% if req.status in ['Repaired', 'Scrap'] %}
+                
+                    <div class="text-center py-4 bg-light rounded-3 border border-dashed">
+                        <i class="bi bi-check-circle-fill fs-1 text-success mb-2"></i>
+                        <h4 class="mt-2 fw-bold">This ticket is closed.</h4>
+                        
+                        <div class="p-3 bg-white border rounded mx-auto mt-3 text-start shadow-sm" style="max-width: 500px;">
+                            <strong class="text-secondary small text-uppercase">Technician Final Note:</strong><br>
+                            <span class="fs-5">{{ req.admin_response or "No notes provided." }}</span>
+                        </div>
+
+                        <a href="/kanban" class="btn btn-dark mt-4 px-4 rounded-pill">Back to Workboard</a>
+                    </div>
+
+                {% else %}
+
+                    <form method="POST">
+                        <h5 class="mt-2 mb-3 border-bottom pb-2 fw-bold">Technician Action</h5>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Update Status:</label>
+                            <select name="status" class="form-select form-select-lg shadow-sm">
+                                <option value="New" {% if req.status == 'New' %}selected{% endif %}>New</option>
+                                <option value="In Progress" {% if req.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                <option value="Repaired" {% if req.status == 'Repaired' %}selected{% endif %}>✅ Repaired (Close Ticket)</option>
+                                <option value="Scrap" {% if req.status == 'Scrap' %}selected{% endif %}>🗑️ Scrap (Cannot Fix)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Estimated Completion:</label>
+                            <input type="date" name="est_date" class="form-control shadow-sm" value="{{ req.estimated_completion }}">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Technician Notes:</label>
+                            <textarea name="response" class="form-control shadow-sm" rows="4" placeholder="Describe the fix or the reason for scrapping...">{{ req.admin_response }}</textarea>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg fw-bold">Update Ticket</button>
+                            <a href="/kanban" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GearGuard Maintenance</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        /* Fallback styles if style.css fails */
+        body { font-family: 'Inter', sans-serif; background-color: #f4f6f9; }
+        .navbar { box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .nav-link { transition: color 0.2s; font-weight: 500; }
+        .nav-link:hover { color: #fff !important; }
+        .nav-link.active { color: #fff !important; font-weight: 700; }
+    </style>
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 mb-4">
+        <div class="container">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+                <i class="bi bi-gear-wide-connected text-warning me-2 fs-4"></i>
+                GearGuard
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto ms-lg-4">
+                    
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                    </li>
+
+                    {% if current_user.role == 'Admin' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/kanban"><i class="bi bi-kanban me-1"></i> Work Board</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/calendar"><i class="bi bi-calendar-week me-1"></i> Schedule</a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link" href="/equipment"><i class="bi bi-box-seam me-1"></i> Assets</a>
+                        </li>
+                    {% endif %}
+                    
+                    {% if current_user.is_authenticated and current_user.role != 'Admin' %}
+                         <li class="nav-item">
+                            <a class="nav-link" href="/request/create"><i class="bi bi-plus-circle me-1"></i> Report Issue</a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <div class="d-flex align-items-center">
+                    {% if current_user.is_authenticated %}
+                        <div class="text-end me-3 d-none d-lg-block">
+                            <small class="text-white-50 d-block" style="font-size: 0.75rem;">Signed in as</small>
+                            <span class="text-white fw-bold">{{ current_user.username }}</span>
+                        </div>
+                        
+                        <span class="badge {% if current_user.role == 'Admin' %}bg-warning text-dark{% else %}bg-secondary{% endif %} me-3">
+                            {{ current_user.role }}
+                        </span>
+
+                        <a href="/logout" class="btn btn-outline-danger btn-sm">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </a>
+                    
+                    {% else %}
+                        {% if request.endpoint == 'login' %}
+                            <span class="text-white-50 me-2 small">New here?</span>
+                            <a href="/signup" class="btn btn-light btn-sm fw-bold shadow-sm">Sign Up</a>
+                        
+                        {% elif request.endpoint == 'signup' %}
+                            <span class="text-white-50 me-2 small">Have an account?</span>
+                            <a href="/login" class="btn btn-outline-light btn-sm">Login</a>
+                        
+                        {% else %}
+                            <a href="/login" class="btn btn-light btn-sm fw-bold shadow-sm">Login</a>
+                        {% endif %}
+
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <div class="container flex-grow-1">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="bg-white border-top py-4 mt-5 text-center text-muted small">
+        <div class="container">
+            <p class="mb-0">© 2025 GearGuard Maintenance Systems. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

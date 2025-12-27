@@ -1,0 +1,137 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-0">Maintenance Work Board</h2>
+            <p class="text-muted">Drag & Drop is not supported yet (Click "Manage" to move)</p>
+        </div>
+        <a href="/calendar" class="btn btn-outline-dark">
+            <i class="bi bi-calendar-week me-2"></i> View Calendar
+        </a>
+    </div>
+
+    <div class="row flex-nowrap overflow-auto pb-4" style="min-height: 70vh;">
+        
+        <div class="col-md-3" style="min-width: 320px;">
+            <div class="bg-light rounded-4 p-3 h-100 shadow-sm">
+                <h5 class="text-danger fw-bold border-bottom border-danger border-3 pb-3 mb-3">
+                    🔴 New Requests
+                </h5>
+                
+                {% for req in new %}
+                <div class="card p-3 shadow-sm mb-3 border-start border-4 border-danger hover-card">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="badge {% if req.priority == 'High' %}bg-danger{% else %}bg-secondary{% endif %}">{{ req.priority }}</span>
+                        <small class="text-muted" style="font-size: 0.75rem;">#{{ req.id }}</small>
+                    </div>
+                    
+                    <h6 class="fw-bold mb-2">{{ req.title }}</h6>
+                    
+                    {% if req.scheduled_date %}
+                        <div class="mb-2 text-primary small fw-bold bg-primary bg-opacity-10 p-1 rounded">
+                            <i class="bi bi-calendar-event me-1"></i> Due: {{ req.scheduled_date }}
+                        </div>
+                    {% elif req.estimated_completion %}
+                        <div class="mb-2 text-danger small fw-bold bg-danger bg-opacity-10 p-1 rounded">
+                            <i class="bi bi-stopwatch me-1"></i> Target: {{ req.estimated_completion }}
+                        </div>
+                    {% endif %}
+
+                    <p class="small text-primary mb-1">
+                        <i class="bi bi-arrow-return-right"></i> To: <strong>{{ req.team.name }}</strong>
+                    </p>
+
+                    <p class="small text-muted mb-2 text-truncate">
+                        <i class="bi bi-box-seam"></i> {{ req.equipment.name }}
+                    </p>
+
+                    <a href="/request/respond/{{ req.id }}" class="btn btn-sm btn-outline-dark w-100 fw-bold">Manage Ticket -></a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-3" style="min-width: 320px;">
+            <div class="bg-light rounded-4 p-3 h-100 shadow-sm">
+                <h5 class="text-primary fw-bold border-bottom border-primary border-3 pb-3 mb-3">
+                    🔵 In Progress
+                </h5>
+                
+                {% for req in progress %}
+                <div class="card p-3 shadow-sm mb-3 border-start border-4 border-primary hover-card">
+                    <h6 class="fw-bold mb-2">{{ req.title }}</h6>
+                    
+                    {% if req.scheduled_date %}
+                        <div class="mb-2 text-primary small fw-bold bg-primary bg-opacity-10 p-1 rounded">
+                            <i class="bi bi-calendar-check me-1"></i> Sched: {{ req.scheduled_date }}
+                        </div>
+                    {% elif req.estimated_completion %}
+                        <div class="mb-2 text-danger small fw-bold bg-danger bg-opacity-10 p-1 rounded">
+                            <i class="bi bi-alarm me-1"></i> Deadline: {{ req.estimated_completion }}
+                        </div>
+                    {% else %}
+                        <div class="mb-2 text-muted small fst-italic">
+                            No deadline set
+                        </div>
+                    {% endif %}
+                    
+                    <p class="small text-primary mb-1">
+                        <i class="bi bi-people-fill me-1"></i> {{ req.team.name }} Team
+                    </p>
+                    
+                    <a href="/request/respond/{{ req.id }}" class="btn btn-sm btn-primary w-100 fw-bold">Update Status</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-3" style="min-width: 320px;">
+            <div class="bg-light rounded-4 p-3 h-100 shadow-sm">
+                <h5 class="text-success fw-bold border-bottom border-success border-3 pb-3 mb-3">
+                    🟢 Repaired / Done
+                </h5>
+                
+                {% for req in done %}
+                <div class="card p-3 shadow-sm mb-3 border-start border-4 border-success opacity-75">
+                    <h6 class="fw-bold text-decoration-line-through mb-1">{{ req.title }}</h6>
+                    
+                    <small class="text-success fw-bold d-block mb-2">
+                        <i class="bi bi-check-all"></i> Completed
+                    </small>
+
+                    <p class="small text-muted mb-2">Fixed by: {{ req.team.name }}</p>
+                    <a href="/request/respond/{{ req.id }}" class="btn btn-sm btn-outline-secondary w-100">View History</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-3" style="min-width: 320px;">
+            <div class="bg-secondary bg-opacity-10 rounded-4 p-3 h-100 shadow-sm">
+                <h5 class="text-dark fw-bold border-bottom border-dark border-3 pb-3 mb-3">
+                    ⚫ Scrap / Unfixable
+                </h5>
+                
+                {% for req in scrap %}
+                <div class="card p-3 shadow-sm mb-3 border-start border-4 border-dark bg-white">
+                    <h6 class="fw-bold mb-1">{{ req.title }}</h6>
+                    <span class="badge bg-dark border border-light mb-2 w-50">SCRAPPED</span>
+                    
+                    <p class="small text-muted mb-2">Item: {{ req.equipment.name }}</p>
+                    <a href="/request/respond/{{ req.id }}" class="btn btn-sm btn-light border w-100">View Report</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    .hover-card { transition: transform 0.2s; }
+    .hover-card:hover { transform: translateY(-3px); cursor: default; }
+</style>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Manage Teams</h4>
+                <span class="badge bg-light text-dark">{{ teams|length }} Teams</span>
+            </div>
+            <div class="card-body">
+
+                <form method="POST" class="row g-3 mb-4 align-items-end border-bottom pb-4">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Add New Department / Team</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Electrical Maintenance" required>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-plus-circle"></i> Add Team
+                        </button>
+                    </div>
+                </form>
+
+                <h5 class="text-secondary">Existing Teams</h5>
+                <div class="list-group">
+                    {% for team in teams %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>{{ team.name }}</strong>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">ID: {{ team.id }}</span>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">No teams found.</p>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
